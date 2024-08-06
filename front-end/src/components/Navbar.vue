@@ -1,7 +1,3 @@
-<script setup lang="ts">
-import router from '@/router';
-</script>
-
 <template>
     <nav class="navbar navbar-expand-lg bg-body-tertiary">
         <div class="container-fluid">
@@ -21,9 +17,19 @@ import router from '@/router';
                         Product
                     </RouterLink>                
                 </li>
+                <li class="nav-item">
+                    <RouterLink class="nav-link" to="/dashboard">
+                        Dashboard
+                    </RouterLink>                
+                </li>
+                <li class="nav-item">
+                    <RouterLink class="nav-link" to="/addProduct">
+                        Add Product
+                    </RouterLink>                
+                </li>
             </ul>
             <div class="d-flex" role="search">                
-                <button @click="router.push('/signin')" class="btn btn-outline-success" type="submit">Signin</button>
+                <button @click="$router.push('/signin')" class="btn btn-outline-success" type="submit">Signin</button>
             </div>
             </div>
         </div>

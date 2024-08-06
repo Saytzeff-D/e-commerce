@@ -1,11 +1,11 @@
 <script>
+import store from '@/store';
 import axios from 'axios';
 
 export default {
     data(){
         return{
-            isLoading: false,
-            url: 'http://localhost:9000/',
+            isLoading: false,            
             successMsg: '',
             errMessage: '',
             email: '',
@@ -24,13 +24,13 @@ export default {
                 password: this.password,  
                 username: this.username              
             }
-            axios.post(`${this.url}signup`, payload).then(resp=>{
+            axios.post(`${store.state.url}signup`, payload).then(resp=>{
                 this.successMsg = resp.data.message
                 this.isLoading = false
                 this.resetForm()
             }).catch(err=>{
-                this.errMessage = err.response.data.message
                 this.isLoading = false
+                this.errMessage = err.response ? err.response.data.message : err.message
             })
         },
         resetForm(){

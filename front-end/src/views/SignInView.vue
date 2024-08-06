@@ -1,12 +1,12 @@
 <script>
 import router from '@/router';
+import store from '@/store';
 import axios from 'axios';
 
 export default {
     data(){
         return{
-            isLoading: false,
-            url: 'http://localhost:9000/',
+            isLoading: false,            
             successMsg: '',
             errMessage: '',
             email: '',
@@ -23,12 +23,12 @@ export default {
                 email: this.email,
                 password: this.password,                              
             }
-            axios.post(`${this.url}signin`, payload).then(resp=>{                
+            axios.post(`${store.state.url}signin`, payload).then(resp=>{                
                 sessionStorage.setItem('jwt', resp.data.access_token)
                 router.push('/dashboard')                              
             }).catch(err=>{
-                this.errMessage = err.response.data.message
                 this.isLoading = false
+                this.errMessage = err.response ? err.response.data.message : err.message
             })
         },            
     }

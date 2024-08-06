@@ -1,41 +1,53 @@
 <script>
 import router from '@/router';
 import axios from 'axios';
+import EditProductModal from '@/components/EditProductModal.vue';
+import store from '@/store';
 
 export default {
+  components: { EditProductModal },
     data(){
-        return {
-            isLoading: true,
-            url: 'http://localhost:9000/',
-            product: [],
-            productDesc: '',
-            priceTag: '',
-            imageUrl: '',
-            user: {}
+        return {                        
+            isDeleting: false,                               
         }
     },
-    methods: {
-        deleteProduct(_id){},
-        updateProduct(){}
-    },
-    mounted(){
-        let jwt = sessionStorage.getItem('jwt')
-        if (jwt == null) {
-            router.push('/signin')
-        } else {
-            axios.get(
-                `${this.url}user`,
+    methods: {                
+        deleteProduct(_id){            
+            this.isDeleting = true
+            axios.patch(
+                `${store.state.url}product/delete`,
+                {_id},
                 {
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${jwt}`
+                        'Authorization': `Bearer ${store.state.jwt}`
                     }
                 }
-            ).then(resp=>{                
-                this.user = resp.data.user
-            }).catch(()=>{
-                router.push('/signin')
+            ).then(resp=>{                                
+                this.getProduct()
+                this.isDeleting = false
+            }).catch((err)=>{
+                this.isDeleting = false                
             })
+        }        
+    },
+    computed: {
+        user(){
+            return store.getters.userDetails
+        },
+        product(){
+            return store.getters.allProducts
+        },
+        isLoading(){
+            return store.getters.isLoading
+        }
+    },
+    mounted(){
+        if (store.state.url == null) {
+            router.push('/signin')
+        } else {
+            store.dispatch('loggedInUser')
+            store.dispatch('getUserProduct')
         }
     }
 }
@@ -46,7 +58,8 @@ export default {
         <p class="display-5">
             Welcome <span class="text-success fw-bold">{{user.username}}</span>.
         </p>
-        <div v-if="product.length !== 0">
+        <span class="spinner-grow" v-if="isLoading"></span>
+        <div v-if="product.length !== 0 && !isLoading">
             <p class="lead">
                 Below is the list of your product
             </p>
@@ -60,29 +73,35 @@ export default {
                         <th>Action</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody v-if="!isLoading">
                     <tr v-for="(each, i) in product" :key="i">
                         <td>{{ i+1 }}</td>
-                        <td>{{ each.menu }}</td>
-                        <td>{{ each.menuDesc }}</td>
-                        <td>{{ each.priceTag }}</td>
+                        <td>{{ each.product }}</td>
+                        <td>{{ each.desc }}</td>
+                        <td>{{ each.price }}</td>
                         <td>
                             <div>
-                                <button class="btn">Edit</button>
-                                <button class="btn">Del</button>
+                                <button data-bs-toggle="modal" data-bs-target="#exampleModal" class="btn btn-secondary mx-1">
+                                    Edit
+                                </button>
+                                <button :disabled="isDeleting" @click="deleteProduct(each._id)" class="btn btn-dark mx-1">
+                                    <span v-if="!isDeleting">Del</span>
+                                    <span v-if="isDeleting" class="spinner-border spinner-border-sm"></span>
+                                </button>
                             </div>
                         </td>
                     </tr>
                 </tbody>
             </table>
         </div>
-        <div v-if="product.length == 0">
+        <div v-if="product.length == 0 && !isLoading">
             <p class="lead">
                 {{ user.username }} has not added any product...
             </p>
-            <button class="btn btn-dark">
+            <button @click="$router.push('/addProduct')" class="btn btn-dark">
                 Click here to add
             </button>
         </div>
     </div>
+    <edit-product-modal />
 </template>

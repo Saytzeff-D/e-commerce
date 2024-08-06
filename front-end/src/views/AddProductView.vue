@@ -1,35 +1,52 @@
 <script>
+import router from '@/router';
+import store from '@/store';
+import axios from 'axios';
+
 export default {
     data(){
-        return{
-            url: 'http://localhost:9000/',
-            serverMessage: {
-                status: '',
-                msg: ''
-            },
+        return{                       
+            errMessage: '',
             product: '',
             productDesc: '',
             priceTag: '',
-            imageUrl: ''
+            image: '',
+            isLoading: false
         }
     },
     methods: {
         addProduct(e){
+            this.isLoading = true
             e.preventDefault()
             let payload = {
                 product: this.product,
                 desc: this.productDesc,
                 price: this.priceTag,
-                image: this.imageUrl
+                image: this.image
             }
-            console.log(payload)
+            axios.post(
+                `${store.state.url}product`,
+                payload,
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${store.state.jwt}`
+                    }
+                }
+            ).then(resp=>{  
+                console.log(resp.data)              
+                router.push('/dashboard')
+            }).catch((err)=>{
+                console.log(err)
+                this.isLoading = false
+                this.errMessage = err.response ? err.response.data.message : err.message
+            })
         },
         pickFile(e){
             const fs = new FileReader
             fs.readAsDataURL(e.target.files[0])
-            fs.onload=()=>{
-            console.log(fs.result)
-            this.imageUrl = fs.result
+            fs.onload=()=>{            
+            this.image = fs.result
             }
         }
     }
@@ -39,13 +56,9 @@ export default {
     <div class="d-flex justify-content-center">
         <form @submit="addProduct" className="col-md-6 border border-dark shadow pb-5 px-5 mt-5">
             <p className='text-center h1 py-2'>Add Product</p>  
-            <div v-if="serverMessage.status === 302" className="alert alert-danger alert-dismissible">
-                <button type="button" className="close" data-dismiss="alert">&times;</button>
-                <strong>ErrorMessage!</strong> {serverMessage.msg}.
-            </div>                  
-            <div v-if="serverMessage.status === 202" className="alert alert-success alert-dismissible">
-                <button type="button" className="close" data-dismiss="alert">&times;</button>
-                <strong>Success!</strong> {serverMessage.msg}.
+            <div v-if="errMessage !== ''" className="alert alert-danger alert-dismissible fade show mt-2">
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                <strong>ErrorMessage!</strong> {{errMessage}}.
             </div>                           
             <label htmlFor="product">Product Name</label>
             <input
@@ -77,7 +90,7 @@ export default {
                 required  
             />
             
-            <label htmlFor="imageUrl">Image of the product</label>
+            <label htmlFor="image">Image of the product</label>
             <input
             className='form-control m-1'
             type="file" 
@@ -87,8 +100,9 @@ export default {
             <button
             type="submit" 
             className='btn btn-dark btn-block my-2'
+            :disabled="isLoading"
             >
-                Add Product
+                {{ isLoading ? 'Please wait...' : 'Add Product' }}
             </button>
         </form>
     </div>
