@@ -67,13 +67,16 @@ const delProduct = (req, res)=>{
     })
 }
 
-const updateProduct = (req, res)=>{
-    const id = req.params.id
+const updateProduct = (req, res)=>{    
     const payload = req.body
-    productModel.findByIdAndUpdate(id, payload, (err, result)=>{
+    productModel.findByIdAndUpdate(payload._id, payload, (err, result)=>{
         if (!err) {
+            result ?
             res.status(200).json({
-                message: result ? 'Product Updated Successfully' : 'The Product could not be updated'
+                message: 'Product Updated Successfully' 
+            }) : 
+            res.status(300).json({
+                message: 'Error in updating the product'
             })
         } else {
             res.status(500).json({message: 'Internal Server Error', err})
