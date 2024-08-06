@@ -1,46 +1,41 @@
 <script>
-import router from '@/router';
 import store from '@/store';
-import axios from 'axios';
+import { toast } from 'vue3-toastify';
+import 'vue3-toastify/dist/index.css';
 
 export default {
     data(){
-        return{
-            isLoading: false,            
-            successMsg: '',
-            errMessage: '',
+        return{                                              
             email: '',
             password: '',            
         }
     },
     methods: {
-        signin(e){
-            this.successMsg = ''
-            this.errMessage = ''
-            this.isLoading = true
+        signin(e){                      
+            store.commit('submit')
             e.preventDefault()
             let payload = {
                 email: this.email,
                 password: this.password,                              
             }
-            axios.post(`${store.state.url}signin`, payload).then(resp=>{                
-                sessionStorage.setItem('jwt', resp.data.access_token)
-                router.push('/dashboard')                              
-            }).catch(err=>{
-                this.isLoading = false
-                this.errMessage = err.response ? err.response.data.message : err.message
-            })
+            store.dispatch('signin', payload)
         },            
+    },
+    computed: {                
+        isSubmitting(){
+            return store.getters.submit
+        }
+    },
+    mounted(){
+        let msg = sessionStorage.getItem('successMsg')
+        msg ? toast.success(msg) : console.log()
+        sessionStorage.removeItem('successMsg')
     }
 }
 </script>
 <template>
     <div class="d-flex justify-content-center pt-5">
-        <form @submit="signin" className="col-lg-4 col-sm-6 border border-dark shadow pb-5 px-5 mt-5">
-            <div v-if="errMessage !== ''" className="alert alert-danger alert-dismissible fade show mt-2">
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                <strong>ErrorMessage!</strong> {{errMessage}}.
-            </div>                              
+        <form @submit="signin" className="col-lg-4 col-sm-6 border border-dark shadow pb-5 px-5 mt-5">                                        
             <p className='text-center h1 py-2'>Sign In</p>                            
             <label htmlFor="email">Email</label>
             <input
@@ -64,9 +59,9 @@ export default {
             <button
             type="submit" 
             className='btn btn-dark btn-block my-2'
-            :disabled="isLoading"
+            :disabled="isSubmitting"
             >
-                {{ isLoading ? 'Please wait...' : 'Sign In' }}
+                {{ isSubmitting ? 'Please wait...' : 'Sign In' }}
             </button>
             <a href="/signup" class="d-block">
                 Not a user? Sign up

@@ -1,35 +1,30 @@
 <script>
 import router from '@/router';
-import axios from 'axios';
 import EditProductModal from '@/components/EditProductModal.vue';
 import store from '@/store';
+import { toast } from 'vue3-toastify';
+import 'vue3-toastify/dist/index.css';
 
 export default {
-  components: { EditProductModal },
+    components: { EditProductModal },
     data(){
-        return {                        
-            isDeleting: false,                               
+        return{
+            searchInput: ''
         }
-    },
+    },    
     methods: {                
-        deleteProduct(_id){            
-            this.isDeleting = true
-            axios.patch(
-                `${store.state.url}product/delete`,
-                {_id},
-                {
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${store.state.jwt}`
-                    }
-                }
-            ).then(resp=>{                                
-                this.getProduct()
-                this.isDeleting = false
-            }).catch((err)=>{
-                this.isDeleting = false                
-            })
-        }        
+        deleteProduct(_id){  
+            store.commit('delete')          
+            store.dispatch('deleteProduct', {_id})
+        },
+        editProduct(product){
+            store.commit('edit', product)
+        },
+        searchProduct(){
+            let filteredProduct = this.product.
+            filter(each=>each.product.toLowerCase().includes(this.searchInput.toLowerCase()))
+            store.commit('searchProduct', filteredProduct)
+        }
     },
     computed: {
         user(){
@@ -40,14 +35,23 @@ export default {
         },
         isLoading(){
             return store.getters.isLoading
+        },
+        isDeleting(){
+            return store.getters.isDeleting
+        },
+        isEditting(){
+            return store.getters.isEditting
         }
     },
     mounted(){
+        let msg = sessionStorage.getItem('successMsg')
         if (store.state.url == null) {
             router.push('/signin')
         } else {
             store.dispatch('loggedInUser')
             store.dispatch('getUserProduct')
+            msg ? toast.success(msg) : console.log()
+            sessionStorage.removeItem('successMsg')
         }
     }
 }
@@ -63,6 +67,9 @@ export default {
             <p class="lead">
                 Below is the list of your product
             </p>
+            <div class="col-md-6">
+                <input @input="searchProduct" v-model="searchInput" class="form-control mb-2" placeholder="Search by Product Name" autofocus />
+            </div>
             <table class="table table-light">
                 <thead>
                     <tr>
@@ -81,7 +88,7 @@ export default {
                         <td>{{ each.price }}</td>
                         <td>
                             <div>
-                                <button data-bs-toggle="modal" data-bs-target="#exampleModal" class="btn btn-secondary mx-1">
+                                <button @click="editProduct(each)" data-bs-toggle="modal" data-bs-target="#exampleModal" class="btn btn-secondary mx-1" >
                                     Edit
                                 </button>
                                 <button :disabled="isDeleting" @click="deleteProduct(each._id)" class="btn btn-dark mx-1">

@@ -1,57 +1,36 @@
 <script>
 import store from '@/store';
-import axios from 'axios';
 
 export default {
     data(){
-        return{
-            isLoading: false,            
-            successMsg: '',
-            errMessage: '',
+        return{                                            
             email: '',
             password: '',
             username: ''            
         }
     },
     methods: {
-        signup(e){
-            this.successMsg = ''
-            this.errMessage = ''
-            this.isLoading = true
+        signup(e){                
+            store.commit('submit')            
             e.preventDefault()
             let payload = {
                 email: this.email,
                 password: this.password,  
                 username: this.username              
             }
-            axios.post(`${store.state.url}signup`, payload).then(resp=>{
-                this.successMsg = resp.data.message
-                this.isLoading = false
-                this.resetForm()
-            }).catch(err=>{
-                this.isLoading = false
-                this.errMessage = err.response ? err.response.data.message : err.message
-            })
-        },
-        resetForm(){
-            this.email = ''
-            this.password = ''
-            this.username = ''
-        }      
-    }
+            store.dispatch('signup', payload)
+        }
+    },
+    computed: {                
+        isSubmitting(){
+            return store.getters.submit
+        }
+    },
 }
 </script>
 <template>
     <div class="d-flex justify-content-center pt-5">
-        <form @submit="signup" className="col-lg-4 col-sm-6 border border-dark shadow pb-5 px-5 mt-3">
-            <div v-if="errMessage !== ''" className="alert alert-danger alert-dismissible fade show mt-2">
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                <strong>ErrorMessage!</strong> {{errMessage}}.
-            </div>                  
-            <div v-if="successMsg !== ''" className="alert alert-success alert-dismissible fade show mt-2">
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                <strong>Success!</strong> {{successMsg}}.
-            </div> 
+        <form @submit="signup" className="col-lg-4 col-sm-6 border border-dark shadow pb-5 px-5 mt-3">            
             <p className='text-center h1'>Sign Up</p>                            
             <label htmlFor="email">Email</label>
             <input
@@ -83,9 +62,9 @@ export default {
             <button
             type="submit" 
             className='btn btn-dark btn-block my-2'
-            :disabled="isLoading"
+            :disabled="isSubmitting"
             >
-                {{ isLoading ? 'Please wait...' : 'Sign Up' }}
+                {{ isSubmitting ? 'Please wait...' : 'Sign Up' }}
             </button>
             <div>
                 <a href="/signin" class="d-block">

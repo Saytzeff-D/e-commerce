@@ -7,11 +7,12 @@ const actions = {
             `${state.url}product/all`,                
         ).then(resp=>{                       
             commit('product', resp.data.product)
-        }).catch((err)=>{                
+        }).catch((err)=>{      
+            console.log(err)          
             commit('error', err.response ? err.response.data.message : err.message)
         })
     },
-    getUserProduct({state, commit}){
+    getUserProduct({state, commit}){        
         axios.get(
             `${state.url}product/user`,
             {
@@ -39,6 +40,73 @@ const actions = {
             commit('user', resp.data.user)
         }).catch(()=>{
             router.push('/signin')
+        })
+    },
+    signin({state, commit}, payload){        
+        axios.post(`${state.url}signin`, payload).then(resp=>{                
+            sessionStorage.setItem('jwt', resp.data.access_token)
+            router.push('/dashboard')                              
+        }).catch(err=>{            
+            commit('error', err.response ? err.response.data.message : err.message)
+        })
+    },
+    signup({state, commit}, payload){
+        axios.post(`${state.url}signup`, payload).then(resp=>{
+            sessionStorage.setItem('successMsg', resp.data.message) 
+            router.push('/signin')                
+        }).catch(err=>{
+            commit('error', err.response ? err.response.data.message : err.message)
+        })
+    },
+    addProduct(context, payload){
+        axios.post(
+            `${context.state.url}product`,
+            payload,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${context.state.jwt}`
+                }
+            }
+        ).then(resp=>{                          
+            sessionStorage.setItem('successMsg', resp.data.message)            
+            router.push('/dashboard')
+        }).catch((err)=>{                        
+            commit('error', err.response ? err.response.data.message : err.message)
+        })
+    },
+    deleteProduct({state, commit, dispatch}, payload){        
+        axios.patch(
+            `${state.url}product/delete`,
+            payload,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${state.jwt}`
+                }
+            }
+        ).then((resp)=>{                                
+            dispatch('getUserProduct')
+            commit('success', resp.data.message)
+        }).catch((err)=>{
+            commit('error', err.response ? err.response.data.message : err.message)             
+        })
+    },
+    updateProduct(context, payload){
+        axios.put(
+            `${context.state.url}product/update`,
+            payload,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${context.state.jwt}`
+                }
+            }
+        ).then((resp)=>{
+            context.commit('success', resp.data.message)
+            context.state.theModal.hide()                                        
+        }).catch((err)=>{
+            context.commit('error', err.response ? err.response.data.message : err.message)             
         })
     }
 }

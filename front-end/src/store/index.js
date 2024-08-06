@@ -11,7 +11,13 @@ const store = createStore({
             user: {},
             product: [],
             errorMsg: '',
-            isLoading: true
+            successMsg: '',
+            isLoading: true,
+            isSubmitting: false,
+            isDeleting: false,
+            isEditting: false,
+            edit: {},
+            theModal: ''
         }
     },
     mutations,

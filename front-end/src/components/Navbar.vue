@@ -28,8 +28,16 @@
                     </RouterLink>                
                 </li>
             </ul>
-            <div class="d-flex" role="search">                
-                <button @click="$router.push('/signin')" class="btn btn-outline-success" type="submit">Signin</button>
+            <div class="d-flex" role="search">
+                <button @click="$router.push('/signin')" class="btn btn-outline-success" type="submit">Signin</button>                
+                <div class="nav-item dropright">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        David
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#">Logout</a></li>                        
+                    </ul>
+                </div>
             </div>
             </div>
         </div>
