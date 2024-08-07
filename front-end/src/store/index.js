@@ -7,7 +7,7 @@ const store = createStore({
     state() {
         return {
             jwt: sessionStorage.getItem('jwt'),
-            url: 'http://localhost:5890/',
+            url: 'https://e-commerce-api-roan.vercel.app/',
             user: {},
             product: [],
             searchedProduct: [],
