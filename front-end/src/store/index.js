@@ -7,9 +7,10 @@ const store = createStore({
     state() {
         return {
             jwt: sessionStorage.getItem('jwt'),
-            url: 'http://localhost:9000/',
+            url: 'http://localhost:5890/',
             user: {},
             product: [],
+            searchedProduct: [],
             errorMsg: '',
             successMsg: '',
             isLoading: true,
@@ -17,7 +18,8 @@ const store = createStore({
             isDeleting: false,
             isEditting: false,
             edit: {},
-            theModal: ''
+            theModal: '',
+            isSearching: false
         }
     },
     mutations,

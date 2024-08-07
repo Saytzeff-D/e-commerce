@@ -1,6 +1,5 @@
 <script>
 import store from '@/store';
-import { Modal } from 'bootstrap';
 
 export default {
     methods: {
@@ -19,7 +18,7 @@ export default {
         }
     },
     mounted(){
-        store.commit('modal', new Modal(document.getElementById('exampleModal')))
+        
     }
 }
 </script>

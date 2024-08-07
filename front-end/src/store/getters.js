@@ -25,6 +25,15 @@ const getters = {
     },
     edit(state){
         return state.edit
+    },
+    isSearching(state){
+        return state.isSearching
+    },
+    searchedProduct(state){
+        return state.searchedProduct
+    },
+    jwt(state){
+        return state.jwt
     }
 }
 

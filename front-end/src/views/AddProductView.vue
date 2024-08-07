@@ -1,4 +1,5 @@
 <script>
+import router from '@/router';
 import store from '@/store';
 
 export default {
@@ -13,6 +14,9 @@ export default {
     computed: {                
         isSubmitting(){
             return store.getters.submit
+        },
+        jwt(){
+            return store.getters.jwt
         }
     },
     methods: {
@@ -34,12 +38,15 @@ export default {
             this.image = fs.result
             }
         }
+    },
+    mounted(){
+        this.jwt == null ? router.push('/signin') : console.log()
     }
 }
 </script>
 <template>
     <div class="d-flex justify-content-center">
-        <form @submit="addProduct" class="col-md-6 border border-dark shadow pb-5 px-5 mt-5">
+        <form @submit="addProduct" className="col-lg-4 col-sm-6 border border-dark shadow pb-5 px-3 mt-5">
             <p class='text-center h1 py-2'>Add Product</p>                                        
             <label htmlFor="product">Product Name</label>
             <input

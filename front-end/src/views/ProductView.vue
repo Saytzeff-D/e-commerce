@@ -29,8 +29,8 @@ export default {
         <h1 class="h2 text-center">Our Product</h1>
         <hr class='container w-25'/>
         <div class="container">            
-            <div class='row w-100' v-if="products.length !== 0 && !isLoading">
-                <div class='col-md-4 my-2' v-for="(each, i) in products" :key="i">
+            <div class='row w-100 mx-auto' v-if="products.length !== 0 && !isLoading">
+                <div class='col-lg-4 col-sm-6 my-2' v-for="(each, i) in products" :key="i">
                     <div class='card'>
                     <img alt='menuImage' :src="each.imageUrl" height="250px" />
                     <div class='card-body'>

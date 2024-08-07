@@ -9,7 +9,7 @@ const actions = {
             commit('product', resp.data.product)
         }).catch((err)=>{      
             console.log(err)          
-            commit('error', err.response ? err.response.data.message : err.message)
+            commit('productError', err.response ? err.response.data.message : err.message)
         })
     },
     getUserProduct({state, commit}){        
@@ -43,7 +43,8 @@ const actions = {
         })
     },
     signin({state, commit}, payload){        
-        axios.post(`${state.url}signin`, payload).then(resp=>{                
+        axios.post(`${state.url}signin`, payload).then(resp=>{  
+            commit('jwt', resp.data.access_token)              
             sessionStorage.setItem('jwt', resp.data.access_token)
             router.push('/dashboard')                              
         }).catch(err=>{            
@@ -72,7 +73,7 @@ const actions = {
             sessionStorage.setItem('successMsg', resp.data.message)            
             router.push('/dashboard')
         }).catch((err)=>{                        
-            commit('error', err.response ? err.response.data.message : err.message)
+            context.commit('error', err.response ? err.response.data.message : err.message)
         })
     },
     deleteProduct({state, commit, dispatch}, payload){        
@@ -104,7 +105,7 @@ const actions = {
             }
         ).then((resp)=>{
             context.commit('success', resp.data.message)
-            context.state.theModal.hide()                                        
+            document.location.reload()
         }).catch((err)=>{
             context.commit('error', err.response ? err.response.data.message : err.message)             
         })

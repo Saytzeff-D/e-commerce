@@ -21,9 +21,8 @@ export default {
             store.commit('edit', product)
         },
         searchProduct(){
-            let filteredProduct = this.product.
-            filter(each=>each.product.toLowerCase().includes(this.searchInput.toLowerCase()))
-            store.commit('searchProduct', filteredProduct)
+            this.searchInput !== '' ? store.commit('search', true) : store.commit('search', false)            
+            store.commit('searchProduct', this.searchInput)
         }
     },
     computed: {
@@ -41,6 +40,12 @@ export default {
         },
         isEditting(){
             return store.getters.isEditting
+        },
+        isSearching(){
+            return store.getters.isSearching
+        },
+        searchedProduct(){
+            return store.getters.searchedProduct
         }
     },
     mounted(){
@@ -67,39 +72,53 @@ export default {
             <p class="lead">
                 Below is the list of your product
             </p>
-            <div class="col-md-6">
-                <input @input="searchProduct" v-model="searchInput" class="form-control mb-2" placeholder="Search by Product Name" autofocus />
+            <div class="row">
+                <div class="col-md-6">
+                    <input @input="searchProduct" v-model="searchInput" class="form-control mb-2" placeholder="Search by Product Name" autofocus />
+                </div>
+                <div class="col-md-6">
+                    <button @click="$router.push('/addProduct')" class="btn btn-dark">
+                        Click to add
+                    </button>
+                </div>
             </div>
-            <table class="table table-light">
-                <thead>
-                    <tr>
-                        <th>S/N</th>
-                        <th>Product Name</th>
-                        <th>Description</th>
-                        <th>Price</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody v-if="!isLoading">
-                    <tr v-for="(each, i) in product" :key="i">
-                        <td>{{ i+1 }}</td>
-                        <td>{{ each.product }}</td>
-                        <td>{{ each.desc }}</td>
-                        <td>{{ each.price }}</td>
-                        <td>
-                            <div>
-                                <button @click="editProduct(each)" data-bs-toggle="modal" data-bs-target="#exampleModal" class="btn btn-secondary mx-1" >
-                                    Edit
-                                </button>
-                                <button :disabled="isDeleting" @click="deleteProduct(each._id)" class="btn btn-dark mx-1">
-                                    <span v-if="!isDeleting">Del</span>
-                                    <span v-if="isDeleting" class="spinner-border spinner-border-sm"></span>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="table-responsive" v-bind:hidden="searchedProduct.length == 0 && isSearching">
+                <table class="table table-light">
+                    <thead>
+                        <tr>
+                            <th>S/N</th>
+                            <th>Product Name</th>
+                            <th>Description</th>
+                            <th>Price</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody v-if="!isLoading">
+                        <tr v-for="(each, i) in isSearching ? searchedProduct : product" :key="i">
+                            <td>{{ i+1 }}</td>
+                            <td>{{ each.product }}</td>
+                            <td>{{ each.desc }}</td>
+                            <td>{{ each.price }}</td>
+                            <td>
+                                <div>
+                                    <button @click="editProduct(each)" data-bs-toggle="modal" data-bs-target="#exampleModal" class="btn btn-secondary mx-1" >
+                                        Edit
+                                    </button>
+                                    <button :disabled="isDeleting" @click="deleteProduct(each._id)" class="btn btn-dark mx-1">
+                                        <span v-if="!isDeleting">Del</span>
+                                        <span v-if="isDeleting" class="spinner-border spinner-border-sm"></span>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div v-if="searchedProduct.length == 0 && isSearching">
+            <p class="lead">
+                No result found
+            </p>            
         </div>
         <div v-if="product.length == 0 && !isLoading">
             <p class="lead">

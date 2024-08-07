@@ -6,11 +6,20 @@ const mutations = {
         state.product = payload
         state.isLoading = false
         state.isDeleting = false
+        state.errorMsg = ''
+    },
+    productError(state, payload){
+        state.errorMsg = payload
+        state.isLoading = false
     },
     user(state, payload){
         state.user = payload
+        state.isSubmitting = false
     },
-    error(state, payload){
+    jwt(state, payload){
+        state.jwt = payload
+    },
+    error(state, payload){        
         toast.error(payload)
         state.isLoading = false
         state.isSubmitting = false
@@ -33,10 +42,14 @@ const mutations = {
         state.isEditting = true
     },
     searchProduct(state, payload){
-        state.product = payload
+        state.searchedProduct = state.product.
+        filter(each=>each.product.toLowerCase().includes(payload.toLowerCase()))
     },
     modal(state, payload){
         state.theModal = payload
+    },
+    search(state, payload){
+        state.isSearching = payload
     }
 }
 
