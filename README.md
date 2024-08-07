@@ -45,4 +45,4 @@ npm start
 
 ### PRODUCTION
 
-Click [here](https://e-commerce-peach-delta.vercel.app/) to visit the deployed web application
+Click [here](https://e-commerce-pi-lyart-60.vercel.app/) to visit the deployed web application
