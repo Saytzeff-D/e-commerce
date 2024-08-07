@@ -11,5 +11,8 @@ router.put('/product/update', authenticate, AppController.updateProduct)
 router.get('/user', authenticate, AppController.currentUser)
 router.post('/signup', AppController.signup)
 router.post('/signin', AppController.signin)
+router.get('/', (req, res)=>{
+    res.send('E-Commerce API is live')
+})
 
 module.exports = router
